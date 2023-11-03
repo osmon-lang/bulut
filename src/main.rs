@@ -1,3 +1,6 @@
+use bulut::github::GitHub;
+
 fn main() {
-    println!("Hello, world!");
+    let git = GitHub::new("osmon-lang", "havo");
+    println!("{:?}", git.releases());
 }

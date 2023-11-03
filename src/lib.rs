@@ -1,3 +1,3 @@
-mod package;
-mod std;
-mod prompt;
+pub mod github;
+pub mod package;
+pub mod prompt;

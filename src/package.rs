@@ -11,7 +11,7 @@ pub struct Package {
     /// Description of the package
     description: String,
 
-    /// Version of Osmon std library
+    /// Version of Osmon libs library
     std: String,
 }
 
@@ -20,18 +20,16 @@ pub enum PackageError {
     NotParsable,
 
     /// Instance can't be written to file
-    NotWritable
+    NotWritable,
 }
 
 impl Package {
-    pub fn new(
-        name: String,
-        version: String,
-        description: String,
-        std: String
-    ) -> Self {
+    pub fn new(name: String, version: String, description: String, std: String) -> Self {
         Self {
-            name, version, description, std
+            name,
+            version,
+            description,
+            std,
         }
     }
 
@@ -45,13 +43,13 @@ impl Package {
     pub fn save(&self, path: &str) -> Result<(), PackageError> {
         let convert = match toml::to_string_pretty(self) {
             Ok(convert) => convert,
-            Err(_) => return Err(PackageError::NotParsable)
+            Err(_) => return Err(PackageError::NotParsable),
         };
 
         // Save package to file
         match std::fs::write(path, convert) {
             Ok(_) => Ok(()),
-            Err(_) => Err(PackageError::NotWritable)
+            Err(_) => Err(PackageError::NotWritable),
         }
     }
 }
