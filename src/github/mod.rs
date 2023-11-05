@@ -37,7 +37,7 @@ impl GitHub {
     // https://github.com/osmon-lang/havo/releases/download/v0.0.3/libhavo.h
     pub fn download_file(&self, version: &str, file: &str) -> Result<(), GitHubError> {
         let mut downloader = Download::new(format!(
-            "{}/{}/{}/releases,download/{}/{}",
+            "{}/{}/{}/releases/download/{}/{}",
             DEFAULT_PROVIDER, self.owner, self.repo, version, file
         ));
 
