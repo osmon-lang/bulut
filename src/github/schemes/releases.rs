@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Release {
+pub struct Releases {
     pub url: String,
     #[serde(rename = "assets_url")]
     pub assets_url: String,
@@ -80,7 +79,7 @@ pub struct Asset {
     #[serde(rename = "node_id")]
     pub node_id: String,
     pub name: String,
-    pub label: Value,
+    pub label: Option<String>,
     pub uploader: Uploader,
     #[serde(rename = "content_type")]
     pub content_type: String,

@@ -1,7 +1,9 @@
-mod schemes;
+pub mod schemes;
 
-use schemes::release::Release;
 use crate::download::Download;
+use crate::github::schemes::release::Release;
+use reqwest::StatusCode;
+use schemes::releases::Releases;
 
 static DEFAULT_PROVIDER: &str = "https://github.com";
 static DEFAULT_API_PROVIDER: &str = "https://api.github.com";
@@ -19,6 +21,8 @@ pub enum GitHubError {
     ClientInstance,
     SerializeError,
     DownloadError,
+    ParseError,
+    VersionNotFound,
 }
 
 impl GitHub {
@@ -47,10 +51,33 @@ impl GitHub {
         }
     }
 
+    pub fn release(&self, version: &String) -> Result<Release, GitHubError> {
+        // Result<Release, GitHubError>
+        let response = self
+            .client
+            .get(format!(
+                "{}/repos/{}/{}/releases/tags/{}",
+                DEFAULT_API_PROVIDER, self.owner, self.repo, version
+            ))
+            .send()
+            .unwrap();
+
+        if response.status() != StatusCode::OK {
+            return Err(GitHubError::VersionNotFound);
+        }
+
+        let parse = response.text().unwrap();
+
+        match serde_json::from_str::<Release>(&parse) {
+            Ok(r) => Ok(r),
+            Err(_) => Err(GitHubError::SerializeError),
+        }
+    }
+
     // Example:
     // https://api.github.com/repos/osmon-lang/havo/releases
     pub fn releases(&self) -> Result<Vec<String>, GitHubError> {
-        let resp = self
+        let response = self
             .client
             .get(format!(
                 "{}/repos/{}/{}/releases",
@@ -61,7 +88,7 @@ impl GitHub {
             .text()
             .unwrap();
 
-        let release: Vec<Release> = serde_json::from_str(&resp).unwrap();
+        let release: Vec<Releases> = serde_json::from_str(&response).unwrap();
 
         Ok(release
             .iter()
